@@ -115,6 +115,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Individuals.h" />
+    <ClInclude Include="Landscape.h" />
+    <ClInclude Include="Population.h" />
+    <ClInclude Include="SpatialRunaway.h" />
+    <ClInclude Include="traits.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Individuals.cpp" />
+    <ClCompile Include="Landscape.cpp" />
+    <ClCompile Include="Population.cpp" />
+    <ClCompile Include="SpatialRunaway.cpp" />
+    <ClCompile Include="traits.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
