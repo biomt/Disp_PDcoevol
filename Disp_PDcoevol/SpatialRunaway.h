@@ -87,7 +87,7 @@ double disprob = 0.1;// probability for dispersal deterministic
 double mean_distance = 100.0; // mean dispersal distance in continouse space
 double disp_cost = 0.0; // cost of dispersal
 
-bool disp_evol = false; // if true, dispersal probability can evolve
+bool disp_evol = true; // if true, dispersal probability can evolve
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
 
 

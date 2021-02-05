@@ -152,14 +152,14 @@ void Individuals::outind(int repl, int gen, std::ofstream *out)
 void Individuals::outind_slim(int repl, int gen, std::ofstream *out)
 {
 
-	*out << repl << "\t" << gen << "\t" << x << "\t" << y << "\t"  << traits.g_pref << "\t" << traits.g_display << "\t"<< sex << endl;
+	*out << repl << "\t" << gen << "\t" << x << "\t" << y << "\t"  << traits.g_pref << "\t" << traits.g_display << "\t"<< traits.g_emig <<"\t" <<  sex << endl;
 
 }
 
 void Individuals::outind_dispersal(int repl, int gen, std::ofstream *out)
 {
 
-	*out << repl << "\t" << gen << "\t" << x << "\t" << y <<"\t"<< newx<<"\t"<<newy<<"\t"<< sex << "\t" <<dispersal_type<<"\t"<<traits.g_pref << "\t" << traits.g_display << endl;
+	*out << repl << "\t" << gen << "\t" << x << "\t" << y <<"\t"<< newx<<"\t"<<newy<<"\t"<< sex << "\t" <<dispersal_type<<"\t"<<traits.g_pref << "\t" << traits.g_display <<"\t" <<traits.g_emig << "\t" << traits.p_emig <<endl;
 
 }
 

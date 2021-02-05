@@ -920,9 +920,9 @@ void mutation(int x,int y)// passing the information to access the population
 	int locus;
 
 	
-	poisson_distribution<>mutdistr((double)popgrid[x][y].Noff*mutationrate*Nloci*2.0); //MT 02/02/21 : times 2 for diploid or because 2 traits???
+	poisson_distribution<>mutdistr((double)popgrid[x][y].Noff*mutationrate*Nloci*2.0*3.0); //MT 02/02/21 : times 2 for diploid // additional because 3 traits
 	uniform_int_distribution<>indistr(0, popgrid[x][y].Noff-1);
-	uniform_int_distribution<>locidistr(0, Nloci * 6 - 1);// times six because 3 traits with each homolog
+	uniform_int_distribution<>locidistr(0, Nloci * 6 - 1); // times six because 3 traits with each homolog
 	
 	Nmut = mutdistr(rdgen);
 
@@ -2307,12 +2307,12 @@ void out_ind_header(void)
 
 	if (indout_slim)
 	{
-		inds << "rep\tgen\tcoordx\tcoordy\tg_pref\tg_display\tsex" << endl;
+		inds << "rep\tgen\tcoordx\tcoordy\tg_pref\tg_display\tg_emig\tsex" << endl;
 	}
 
 	else
 	{
-		inds << "rep\tgen\tcoordx\tcoordy\tsex\tg_pref\tp_pref\tg_display\tp_display" << endl;
+		inds << "rep\tgen\tcoordx\tcoordy\tsex\tg_pref\tp_pref\tg_display\tp_display\tg_emig\tp_emig" << endl;
 	}
 }
 
@@ -2333,12 +2333,12 @@ void out_param_header(void) {
 	name = dirout + "Sim" + Int2Str(simNr) + "_parameters.txt";
 	param.open(name.c_str());
 
-	param << "SimNr\trep\tgen\txmax\tymax\tKmin\tKmax\tSmin\tSmax\thabturn\tdisprob\tmdistance\tdispcost\tNloci\tmeanPref\tstdPref\tmeanDisplay\tstdDisplay\tmutrate\tsampleallmates\tind_sample\tquantileS\tsubsamplemates\toffspring\toutpop\toutind\tcost_f\tfc_hard\tfsel_din\tw_f\topt_f\tcost_m\tmc_hard\tmsel_din\tw_m\topt_m" << endl;
+	param << "SimNr\trep\tgen\txmax\tymax\tKmin\tKmax\tSmin\tSmax\thabturn\tdisprob\tmdistance\tdispcost\tNloci\tmeanPref\tstdPref\tmeanDisplay\tstdDisplay\t\tmeanEmig\tstdEmig\tmutrate\tsampleallmates\tind_sample\tquantileS\tsubsamplemates\toffspring\toutpop\toutind\tcost_f\tfc_hard\tfsel_din\tw_f\topt_f\tcost_m\tmc_hard\tmsel_din\tw_m\topt_m" << endl;
 }
 
 void outparam(int simNr,std::ofstream*out) {
 
-	*out << simNr << "\t" << rep << "\t" << gen << "\t" << xmax << "\t" << ymax << "\t"<< Kmin << "\t" << Kmax<< "\t"<< Smin <<"\t"<< Smax << "\t" << hab_turn << "\t" << disprob << "\t" << mean_distance << "\t" << disp_cost << "\t" << Nloci << "\t" << meanPref << "\t" << stdPref << "\t" << meanDisplay << "\t" << stdDisplay << "\t" << mutationrate << "\t" << sample_all_mates << "\t" << ind_sample<<"\t"<< quantileS << "\t" << subsample_mates << "\t" << offspring << "\t" << out_pop_interval << "\t" << out_ind_interval <<"\t"<< f_costs<< "\t" << fc_hard << "\t" << fsel_din << "\t"<<w_f<<"\t"<<optima_f<<"\t"<<m_costs<<"\t"<< mc_hard <<"\t"<< msel_din<<"\t"<<w_m<<"\t"<<optima_m<< endl;
+	*out << simNr << "\t" << rep << "\t" << gen << "\t" << xmax << "\t" << ymax << "\t"<< Kmin << "\t" << Kmax<< "\t"<< Smin <<"\t"<< Smax << "\t" << hab_turn << "\t" << disprob << "\t" << mean_distance << "\t" << disp_cost << "\t" << Nloci << "\t" << meanPref << "\t" << stdPref << "\t" << meanDisplay << "\t" << stdDisplay << "\t" <<meanEmig << "\t"<< stdEmig<< "\t" << mutationrate << "\t" << sample_all_mates << "\t" << ind_sample<<"\t"<< quantileS << "\t" << subsample_mates << "\t" << offspring << "\t" << out_pop_interval << "\t" << out_ind_interval <<"\t"<< f_costs<< "\t" << fc_hard << "\t" << fsel_din << "\t"<<w_f<<"\t"<<optima_f<<"\t"<<m_costs<<"\t"<< mc_hard <<"\t"<< msel_din<<"\t"<<w_m<<"\t"<<optima_m<< endl;
 }
 
 void sim_out(void) {
