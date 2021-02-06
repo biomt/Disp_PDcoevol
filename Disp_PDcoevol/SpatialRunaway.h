@@ -46,10 +46,10 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =1; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =7; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
-int rep = 3; // replicates of your simulations
-int gen = 20; // number of generations
+int rep = 5; // replicates of your simulations
+int gen = 1000; // number of generations
 
 int r, g; // current replicate and current generation in the simulation
 
@@ -67,10 +67,10 @@ double hab_turn = 0.0;// rate at which habitat is destroyed (*indivuduals are ki
 // Sampling of males by females
 
 
-bool sample_all_mates = true; // if true sample all males, if false, subsample 
-bool ind_sample = false; // if subsampling should be done in number of males (true) or otherwise use proportions to caclulate number
-bool quantileS = true;	// if percentage is subsampled, (if true) then percentagage sampled in steps of 10, also S distrubution has to be from 1 to 10
-int subsample_mates =1000; // number of males being subsampled
+bool sample_all_mates = false; // if true sample all males, if false, subsample 
+bool ind_sample = true; // if subsampling should be done in number of males (true) or otherwise use proportions to caclulate number
+bool quantileS = false;	// if percentage is subsampled, (if true) then percentagage sampled in steps of 10, also S distrubution has to be from 1 to 10
+int subsample_mates =1; // number of males being subsampled
 
 
 // Reproduction, Mutatuion
@@ -78,14 +78,14 @@ int subsample_mates =1000; // number of males being subsampled
 double offspring=4.0; // mean offspring
 
 double recprob = 0.5; // probabilty of recombination
-double mutationrate = 0.00001; // 
+double mutationrate = 0.001; // 
 
 // Dispersal 
 
 
 double disprob = 0.1;// probability for dispersal deterministic
 double mean_distance = 100.0; // mean dispersal distance in continouse space
-double disp_cost = 0.0; // cost of dispersal
+double disp_cost = 0.99; // cost of dispersal
 
 bool disp_evol = true; // if true, dispersal probability can evolve
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
@@ -98,9 +98,9 @@ double meanDisplay = 0.0;
 double meanEmig = 0.5;
 
 
-double stdPref = 0.00001;
-double stdDisplay = 0.00001;
-double stdEmig = 0.00001;
+double stdPref = 0.5;
+double stdDisplay = 0.5;
+double stdEmig = 0.5;
 
 
 bool m_costs = true; // if male trait is costly or not
@@ -164,11 +164,11 @@ bool dispersal_out = false;
 
 // parameters for distributions
 
-int Kmin = 100;
-int Kmax = 100;
+int Kmin = 500;
+int Kmax = 500;
 
-int Smin = 10; // if quantile is true : values from 1-10, if false: values from 1-100
-int Smax = 10;
+int Smin = 1; // if quantile is true : values from 1-10, if false: values from 1-100
+int Smax = 1;
 
 
 // distributions

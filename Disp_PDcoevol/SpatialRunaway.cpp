@@ -1019,7 +1019,7 @@ void dispersal(void) {
 				for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++)
 				{
 				
-					if(disp_evol) emp=iter->traits.g_display;
+					if(disp_evol) emp=iter->traits.g_emig;
 					else emp= disprob;
 
 					if(unireal(rdgen)<emp)// individual is dispersing
@@ -1123,7 +1123,7 @@ void dispersal(void) {
 				// same for male offspring 
 				for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++)
 				{
-					if (disp_evol) emp = iter->traits.g_display;
+					if (disp_evol) emp = iter->traits.g_emig;
 					else emp = disprob;
 
 					if (unireal(rdgen) < emp)// individual is dispersing
