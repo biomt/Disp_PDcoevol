@@ -46,7 +46,7 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =7; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =4; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
 int rep = 5; // replicates of your simulations
 int gen = 1000; // number of generations
@@ -85,7 +85,7 @@ double mutationrate = 0.001; //
 
 double disprob = 0.1;// probability for dispersal deterministic
 double mean_distance = 100.0; // mean dispersal distance in continouse space
-double disp_cost = 0.99; // cost of dispersal
+double disp_cost = 0.6; // cost of dispersal
 
 bool disp_evol = true; // if true, dispersal probability can evolve
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
@@ -98,9 +98,9 @@ double meanDisplay = 0.0;
 double meanEmig = 0.5;
 
 
-double stdPref = 0.5;
-double stdDisplay = 0.5;
-double stdEmig = 0.5;
+double stdPref = 1;
+double stdDisplay = 1;
+double stdEmig = 1;
 
 
 bool m_costs = true; // if male trait is costly or not

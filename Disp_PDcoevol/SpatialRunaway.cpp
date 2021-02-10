@@ -2333,7 +2333,7 @@ void out_param_header(void) {
 	name = dirout + "Sim" + Int2Str(simNr) + "_parameters.txt";
 	param.open(name.c_str());
 
-	param << "SimNr\trep\tgen\txmax\tymax\tKmin\tKmax\tSmin\tSmax\thabturn\tdisprob\tmdistance\tdispcost\tNloci\tmeanPref\tstdPref\tmeanDisplay\tstdDisplay\t\tmeanEmig\tstdEmig\tmutrate\tsampleallmates\tind_sample\tquantileS\tsubsamplemates\toffspring\toutpop\toutind\tcost_f\tfc_hard\tfsel_din\tw_f\topt_f\tcost_m\tmc_hard\tmsel_din\tw_m\topt_m" << endl;
+	param << "SimNr\trep\tgen\txmax\tymax\tKmin\tKmax\tSmin\tSmax\thabturn\tdisprob\tmdistance\tdispcost\tNloci\tmeanPref\tstdPref\tmeanDisplay\tstdDisplay\tmeanEmig\tstdEmig\tmutrate\tsampleallmates\tind_sample\tquantileS\tsubsamplemates\toffspring\toutpop\toutind\tcost_f\tfc_hard\tfsel_din\tw_f\topt_f\tcost_m\tmc_hard\tmsel_din\tw_m\topt_m" << endl;
 }
 
 void outparam(int simNr,std::ofstream*out) {
