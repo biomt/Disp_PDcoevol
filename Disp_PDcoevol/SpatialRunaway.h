@@ -46,10 +46,10 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =4; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =6; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
 int rep = 5; // replicates of your simulations
-int gen = 1000; // number of generations
+int gen = 500; // number of generations
 
 int r, g; // current replicate and current generation in the simulation
 
@@ -60,7 +60,7 @@ int r, g; // current replicate and current generation in the simulation
 
  const double cell_resolution = 100.0; // resolution in the cell
 
-double hab_turn = 0.0;// rate at which habitat is destroyed (*indivuduals are killed off in sub population).
+double hab_turn = 0.3;// rate at which habitat is destroyed (*indivuduals are killed off in sub population).
 
 
 
@@ -85,7 +85,7 @@ double mutationrate = 0.001; //
 
 double disprob = 0.1;// probability for dispersal deterministic
 double mean_distance = 100.0; // mean dispersal distance in continouse space
-double disp_cost = 0.6; // cost of dispersal
+double disp_cost = 0.0; // cost of dispersal
 
 bool disp_evol = true; // if true, dispersal probability can evolve
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
@@ -103,12 +103,12 @@ double stdDisplay = 1;
 double stdEmig = 1;
 
 
-bool m_costs = true; // if male trait is costly or not
+bool m_costs = false; // if male trait is costly or not
 bool mc_hard = true; // if selection on male trait is hard or soft
 double w_m = 2.0; // strength of natural selection on male trait- will be squared 
 double optima_m = 0.0;// global optima for male trait (could in the future be changed into a property of grid)
 
-bool f_costs = true; // if female pref is costly or not
+bool f_costs = false; // if female pref is costly or not
 bool fc_hard = true; // if selection on female trait is hard or soft
 double w_f = 5.0; // strength o natural selection on female trait
 double optima_f = 0.0; // global optima for female pref
@@ -164,8 +164,8 @@ bool dispersal_out = false;
 
 // parameters for distributions
 
-int Kmin = 500;
-int Kmax = 500;
+int Kmin = 200;
+int Kmax = 200;
 
 int Smin = 1; // if quantile is true : values from 1-10, if false: values from 1-100
 int Smax = 1;

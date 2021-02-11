@@ -38,28 +38,28 @@ void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::norma
 	}
 
 
-	if (traits.g_display > 0)
+	if (traits.g_display > 0.0)
 	{
 	traits.p_display = traits.g_display; // phenotype equals the genotype when trait is above 0
 	}
 	
 	else
 	{
-		traits.p_display = 0; // phenotype is bound by 0
+		traits.p_display = 0.0; // phenotype is bound by 0
 	}
 
 
 	traits.p_pref = traits.g_pref;
 
-	if (traits.g_emig < 0)
+	if (traits.g_emig < 0.0)
 	{
-		traits.p_emig = 0; // emigration phenotype bound by 0
+		traits.p_emig = 0.0; // emigration phenotype bound by 0
 	}
 	else 
 	{
-		if (traits.g_emig > 1)
+		if (traits.g_emig > 1.0)
 		{
-			traits.p_emig = 1; // emigration phenotype bound by 1
+			traits.p_emig = 1.0; // emigration phenotype bound by 1
 		}
 		else {
 			traits.p_emig = traits.g_emig;
@@ -122,15 +122,15 @@ void Individuals::mutation_effect(int L,int Nloci,normal_distribution<>effect)
 				traits.emig1[L - 4 * Nloci] += muteffect;
 			}
 			else {
-				traits.display2[L - 5 * Nloci] += muteffect;
+				traits.emig2[L - 5 * Nloci] += muteffect;
 			}
 
 			traits.g_emig += muteffect;
 
-			if (traits.g_emig < 0) traits.p_emig = 0;
+			if (traits.g_emig < 0.0) traits.p_emig = 0.0;
 			else 
 			{
-				if (traits.g_emig > 1)traits.p_emig = 1;
+				if (traits.g_emig > 1.0)traits.p_emig = 1.0;
 				else traits.p_emig = traits.g_emig;
 
 			}

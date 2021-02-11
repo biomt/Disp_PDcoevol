@@ -39,6 +39,18 @@ int main(int argc,char* argv[])
 	out_pop_interval2=std::atoi(argv[19]);
 	out_ind_interval2=std::atoi(argv[20]);
 
+//addition for dispersal evolution
+	disp_evol= std::atoi(argv[21]);
+	disp_cost= std::atof(argv[22]);
+
+	meanDisplay= std::atof(argv[23]);
+	meanPref= std::atof(argv[24]);
+	meanEmig= std::atof(argv[25]);
+
+	stdDisplay= std::atof(argv[26]);
+	stdPref= std::atof(argv[27]);
+	stdEmig= std::atof(argv[28]);
+
 
 	
 // track time of the line
