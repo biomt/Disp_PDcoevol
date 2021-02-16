@@ -46,21 +46,21 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =6; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =7; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
-int rep = 5; // replicates of your simulations
-int gen = 500; // number of generations
+int rep = 1; // replicates of your simulations
+int gen = 10; // number of generations
 
 int r, g; // current replicate and current generation in the simulation
 
 //Landscape
 
- const int xmax = 2;
+ const int xmax = 1;
  const int ymax = 2;
 
  const double cell_resolution = 100.0; // resolution in the cell
 
-double hab_turn = 0.3;// rate at which habitat is destroyed (*indivuduals are killed off in sub population).
+double hab_turn = 0.0;// rate at which habitat is destroyed (*indivuduals are killed off in sub population).
 
 
 
@@ -89,7 +89,7 @@ double disp_cost = 0.0; // cost of dispersal
 
 bool disp_evol = true; // if true, dispersal probability can evolve
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
-
+bool d_post = false; // post- survival dispersal
 
 // Trait and Selection
 int Nloci = 10;
@@ -100,7 +100,7 @@ double meanEmig = 0.5;
 
 double stdPref = 1;
 double stdDisplay = 1;
-double stdEmig = 1;
+double stdEmig = 0.1;
 
 
 bool m_costs = false; // if male trait is costly or not
@@ -127,13 +127,14 @@ Population popgrid[xmax][ymax]; // contains the populations
 
 void runmodel(void);
 void start(void);
-//void reproduction(void);
 void reproduction2(void);
 void inheritance(Individuals*,Individuals,Individuals);// offspring and parents of calss individual go into the inheritance function
 void mutation(int,int);
 void dispersal(void);
+void dispersal_ds(void);
 void dispersal_control(void);
 void survival(void);
+void survival_ds(void);
 void out_pop_header(void);// creates file, opens the file and writes the names of the first column (the headers)
 void out_ind_header(void);
 void out_inddispersal_header(void); // file
@@ -155,8 +156,8 @@ int out_ind_interval = 1;
 
 int out2_limit = 80;
 
-int out_pop_interval2 = 1;
-int out_ind_interval2 = 1;
+int out_pop_interval2 = 20;
+int out_ind_interval2 = 20;
 
 
 bool indout_slim = true;
@@ -164,8 +165,8 @@ bool dispersal_out = false;
 
 // parameters for distributions
 
-int Kmin = 200;
-int Kmax = 200;
+int Kmin = 50;
+int Kmax = 50;
 
 int Smin = 1; // if quantile is true : values from 1-10, if false: values from 1-100
 int Smax = 1;

@@ -114,17 +114,27 @@ void runmodel(void){
 			reproduction2();
 			//cout << "reproduction OK" << endl;
 			
-			survival();
-			//cout << "survival OK" << endl;
+			if (d_post) { // post-survival dispersal
 
-			if (dispersal_cntrl)
-			{
-				dispersal_control();
+				survival();
+				//cout << "survival OK" << endl;
+
+				if (dispersal_cntrl)
+				{
+					dispersal_control();
+				}
+				else
+				{
+					dispersal();
+				}
 			}
-			else
-			{
-				dispersal();
+			else { // pre-survival dispersal
+
+				dispersal_ds();
+				survival_ds();
+
 			}
+			
 			
 			//cout << "dispersal OK" << endl;
 		}
@@ -196,251 +206,6 @@ void start(void) {
 	}
 }
 
-// reproduction 1 function
-/*
-
-void reproduction(void)
-{
-	// define local variable for the funtion
-	vector<Individuals>::iterator iter; // member of the vector class, enables you to act on the vector
-	vector<Individuals>::iterator iter2; // to loop through all males to calculate the sum of exponential pref to display relation
-	vector<Individuals>::iterator iter3; // to loop through each male to apply cumultative distribution
-	
-	int IDmale;
-	double sumNmales = 0.0; // variable for the sum of all males realtion of their dispaly to the females pref
-	double probmale = 0.0; // probability of each male
-	double cumprob = 0.0; // cumultative prob,
-	double choice;
-
-	int a_males; // counter of males
-	int noffspring; 
-	bool sex; // sex of the offspring
-
-	Individuals *ind; // is a pointer to now an undfeined object of class individual
-
-	vector<double>cumdistr; // is the cumulative distribution of males prob of being chosen
-	vector<int>idmates;	// identity of the mates, position of the mates in the male vector
-	vector<int>a_mates; // males to sample from if not all males
-
-	for (int i = 0; i < xmax; i++) // looping through the cell grid again
-	{
-		for (int j = 0; j < ymax; j++)
-		{
-			//deciding if this grid cell is going extinct
-			
-			if (extdistr(rdgen))
-			{
-
-				
-				if (!popgrid[i][j].females.empty())
-				{
-					popgrid[i][j].females.clear();
-					popgrid[i][j].Nf = 0;
-				}
-
-				
-				if (!popgrid[i][j].males.empty())
-				{
-					popgrid[i][j].males.clear();
-					popgrid[i][j].Nm=0;
-				}
-				
-				popgrid[i][j].N = 0;
-
-		
-			}
-			
-			else {}
-
-			
-			
-			
-			
-			if (popgrid[i][j].Nm > 0 && popgrid[i][j].Nf > 0) // if there are males and females to reproduce
-			{
-				
-				//cout << "nfemales " << popgrid[i][j].Nf << endl;
-				//cout << "nmales " << popgrid[i][j].Nm << endl;
-				
-				for (iter = popgrid[i][j].females.begin(); iter != popgrid[i][j].females.end(); iter++)// use iterator to loop through female vector. For each female describe how she gets her mate:
-				{
-					sumNmales = 0.0;// initilalize at zero for every female
-					probmale = 0.0;
-					cumprob = 0.0;
-					
-					//cout << "female pref value: " << iter->traits.p_pref << endl;
-
-					if (sample_all_mates||(!sample_all_mates && popgrid[i][j].Nm<=subsample_mates)) // dont have to specify further, cause if its boolean its automaitcally true for if statments. If all males should be sampled. 
-					{
-						// 1. get cumultative probabilty distribution for females to sample from, fitst loop through all males and calculate sum of probabiltiy
-						for (iter2 = popgrid[i][j].males.begin(); iter2 != popgrid[i][j].males.end(); iter2++)
-						{
-							sumNmales += exp(iter2->traits.p_display*iter->traits.p_pref); // calculate sum, in the denominator of the equation for calcualting prob for each male!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-						
-							//double pippo = exp(iter2->traits.p_display*iter->traits.p_pref);
-							//cout <<"pippos should add to sumNmales"<< pippo << endl;
-						
-						}
-
-						//cout  << "sumNmales: "<< sumNmales << endl;
-
-						for (iter3 = popgrid[i][j].males.begin(); iter3 != popgrid[i][j].males.end(); iter3++) // calculate prob for each male and create cumultative distribution
-						{
-							probmale = (exp(iter3->traits.p_display*iter->traits.p_pref) / sumNmales);
-							cumprob += probmale;
-							cumdistr.push_back(cumprob);
-
-
-							//cout <<" .male probability of being chosen : " << probmale << " cumprob: " << cumprob << " male display trait: "<< iter3->traits.p_display<< endl;
-
-						}
-
-						//2. let female choose : 
-
-						//random number between 0-1
-						choice = Prob(rdgen);
-
-						//cout << "choice" << choice << endl;
-
-						IDmale = 0;  // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
-
-						//int pippo = (int)cumdistr.size();
-						//out << pippo << endl;
-
-						for (int z = 0; z < (int)cumdistr.size(); ++z) // choosing the female by iterating of the vector that contains the added probabilities, and therefore acts as a cumultative discribution). bug in the choice!!!
-						{
-							if (choice < cumdistr[z])
-							{
-								IDmale = z;
-								break;
-							}
-
-						}
-						
-						//cout << "male ID " << IDmale << endl;
-
-						cumdistr.clear();
-						
-		
-
-					}
-					else // if not sample all males
-					{
-					//sampling without  replacement
-
-						a_males = popgrid[i][j].Nm;//the number of so called available males to take a sample from
-
-						for (int z = 0; z < a_males; ++z) // where is the vector a_mates vector?????????
-						{
-							a_mates.push_back(z);
-						}
-
-						for (int z = 0; z < subsample_mates; ++z)
-						{
-							uniform_int_distribution<>samplemates(0, a_males - 1);
-
-							IDmale = samplemates(rdgen);
-							
-							sumNmales += exp(popgrid[i][j].males[IDmale].traits.p_display*iter->traits.p_pref);// sum of male prob
-
-
-							idmates.push_back(IDmale);
-							a_males--;
-							a_mates.erase(a_mates.begin() + IDmale);
-							
-						}
-
-
-						if (!a_mates.empty()) a_mates.clear();// if vector is not empty, clear it
-
-						// make other bit with cum distribution from idmates ???????????????????????????????? problem with vector out of bound???
-						for (int z = 0; z < (int)idmates.size(); ++z)
-						{
-							probmale = (exp(popgrid[i][j].males[idmates[z]].traits.p_display*iter->traits.p_pref) / sumNmales); // enter male value of pogrid i and j at position determined by idmates of z
-							cumprob += probmale;
-							cumdistr.push_back(cumprob);
-
-						}
-
-			
-
-						choice = Prob(rdgen);
-						IDmale = 0;
-
-						for (int z = 0; z < (int)idmates.size(); ++z) // idmates and cumdistr vector refer both to the same individuals, idmates holds the position int the male vector, while cumdistr his probability of being chosen
-						{
-							if (choice < cumdistr[z])
-							{
-								IDmale = idmates[z]; // now ID male carries the position of the chosen male in the male vector
-							}
-						}
-
-						if (!idmates.empty()) idmates.clear();// ?????????????????????????????????????????????????????
-
-						cumdistr.clear(); 
-
-					}// female has a male identified in IDmale
-
-					//cout << "mating OK" << endl;
-
-					// producing offpsring with male
-					
-					noffspring = offdistr(rdgen); // number of offspring for that female
-
-					if (noffspring > 0)
-					{
-						for (int z = 0; z < noffspring; ++z)
-						{
-							sex = sexdistr(rdgen);
-
-							if (sex)// female
-							{
-								ind = new Individuals(sex, i, j); // with the pointer i know the adress of the object without using a counter
-								inheritance(ind, *iter, popgrid[i][j].males[IDmale]);
-
-								popgrid[i][j].femaleOffspring.push_back(*ind);// object is accessed by the star
-								popgrid[i][j].Foff++;
-
-							}
-							else {
-								ind = new Individuals(sex, i, j);
-								inheritance(ind, *iter, popgrid[i][j].males[IDmale]);
-
-								popgrid[i][j].maleOffspring.push_back(*ind);
-								popgrid[i][j].Moff++;
-
-							}
-							
-							popgrid[i][j].Noff++;
-							delete ind;
-
-							
-						}
-					}
-					//cout << "offspring OK" << endl;
-
-					
-
-				}
-
-				
-				/////Population level in the loop. Put the mutation function
-				mutation(i, j); // aplly mutations on the pop level
-
-				//cout << "mutation OK" << endl;
-
-			}
-			// killing of the adult population
-			popgrid[i][j].females.clear();
-			popgrid[i][j].males.clear();
-
-			popgrid[i][j].N = 0;
-			popgrid[i][j].Nf = 0;
-			popgrid[i][j].Nm = 0;
-		}
-	}
-} 
-*/
 
 void reproduction2(void) 
 {
@@ -501,9 +266,9 @@ void reproduction2(void)
 
 			if (popgrid[i][j].Nm > 0 && popgrid[i][j].Nf > 0) // if there are males and females to reproduce
 			{
-
-				//cout << "nfemales " << popgrid[i][j].Nf << endl;
-				//cout << "nmales " << popgrid[i][j].Nm << endl;
+				//cout << " R:n " << popgrid[i][j].N << endl;
+				//cout << " R:nfemales " << popgrid[i][j].Nf << endl;
+				//cout << "R: nmales " << popgrid[i][j].Nm << endl;
 
 				for (iter = popgrid[i][j].females.begin(); iter != popgrid[i][j].females.end(); iter++)// use iterator to loop through female vector. For each female describe how she gets her mate:
 				{
@@ -701,7 +466,7 @@ void reproduction2(void)
 
 						//cout << IDmale << " IDmale" << endl;
 
-						if (!idmates.empty()) idmates.clear();// ?????????????????????????????????????????????????????
+						if (!idmates.empty()) idmates.clear();//
 
 						cumdistr.clear();
 
@@ -771,6 +536,15 @@ void reproduction2(void)
 			// killing of the adult population
 			popgrid[i][j].females.clear();
 			popgrid[i][j].males.clear();
+
+			//cout << "R: N= " << popgrid[i][j].N << endl;
+			//cout << "R: Noff= " << popgrid[i][j].Noff << endl;
+
+			//cout << "R: Nf= " << popgrid[i][j].Nf << endl;
+			//cout << "R: Foff= " << popgrid[i][j].Foff << endl;
+
+			//cout << "R: Nm= " << popgrid[i][j].Nm << endl;
+			//cout << "R: Moff= " << popgrid[i][j].Moff << endl;
 
 			popgrid[i][j].N = 0;
 			popgrid[i][j].Nf = 0;
@@ -1252,7 +1026,250 @@ void dispersal(void) {
 }
  // current dispersal function commented out
 
+void dispersal_ds(void) {
+	int new_x;
+	int new_y;
+	double distance, rnd_angle, R1, x_rand, y_rand;
+	double emp; //emigration probabilty 
 
+	vector<Individuals>::iterator iter;
+	std::uniform_real_distribution<>unireal(0.000000001, 0.999);
+	std::uniform_real_distribution<>position(0.0, 0.999); // to get the postiion of the ind in the cell
+
+
+	//bernoulli_distribution dispdistr(disprob);
+
+
+
+	for (int i = 0; i < xmax; ++i)
+	{
+		for (int j = 0; j < ymax; ++j)
+		{
+			if (popgrid[i][j].Noff > 0)
+			{
+				//for female offspring
+				for (iter = popgrid[i][j].femaleOffspring.begin(); iter != popgrid[i][j].femaleOffspring.end(); iter++)
+				{
+
+					if (disp_evol) emp = iter->traits.g_emig;
+					else emp = disprob;
+
+					if (unireal(rdgen) < emp)// individual is dispersing
+					{
+
+						//make indivudal disperser type true
+
+						iter->dispersal_type = true;
+
+						if (!costdistr(rdgen)) // if ind suvives then. (Cost dispersal)
+						{
+							//cout << "female dispersing"<< iter->x << iter->y << endl;
+
+
+							x_rand = position(rdgen);// sample random position
+							y_rand = position(rdgen);
+							do
+							{
+
+								do
+								{
+									R1 = unireal(rdgen);// random number
+									distance = (-1.0*mean_distance)*log(R1);// calc distance
+									rnd_angle = Prob(rdgen)*2.0*PI;// angle
+									new_x = (int)(distance*cos(rnd_angle) / cell_resolution + x_rand + i); //translate the continouse distance into a new position in the discrete cell
+									new_y = (int)(distance*sin(rnd_angle) / cell_resolution + y_rand + j);
+
+								} while (new_x == i && new_y == j);
+
+							} while (new_x<0 || new_x>xmax - 1 || new_y<0 || new_y>ymax - 1);
+
+							// give indivudal newx the value of new_x
+
+							iter->newx = new_x;
+							iter->newy = new_y;
+
+							if (dispersal_out)
+							{
+
+
+
+
+								if (g%out_ind_interval == 0)
+								{
+									iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+								}
+								else
+								{
+									if (g > out2_limit && g%out_ind_interval2 == 0)
+									{
+										iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+									}
+								}
+
+							}
+							//cout << iter->x << iter->y << " and " << new_x << new_y << endl;
+							iter->x = new_x;
+							iter->y = new_y;
+
+							popgrid[new_x][new_y].tmp_females.push_back(*iter);
+							popgrid[new_x][new_y].Noff++;
+							popgrid[i][j].Noff--;
+							popgrid[new_x][new_y].Foff++;
+							popgrid[i][j].Foff--;
+						}
+						else
+						{
+							popgrid[i][j].Noff--;
+							popgrid[i][j].Foff--;
+						}
+					}
+					else
+					{
+
+						if (dispersal_out)
+						{
+
+
+							//extract resident information
+							iter->dispersal_type = false;
+							iter->newx = iter->x;
+							iter->newy = iter->y;
+
+							if (g%out_ind_interval == 0)
+							{
+								iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+							}
+							else
+							{
+								if (g > out2_limit && g%out_ind_interval2 == 0)
+								{
+									iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+								}
+							}
+
+						}
+
+						popgrid[i][j].tmp_females.push_back(*iter);
+					}
+				}
+				// same for male offspring 
+				for (iter = popgrid[i][j].maleOffspring.begin(); iter != popgrid[i][j].maleOffspring.end(); iter++)
+				{
+					if (disp_evol) emp = iter->traits.g_emig;
+					else emp = disprob;
+
+					if (unireal(rdgen) < emp)// individual is dispersing
+					{
+						// make ind a disperser type
+
+						iter->dispersal_type = true;
+
+						if (!costdistr(rdgen)) // if ind suvives then. (Cost dispersal)
+						{
+							//cout << "male disperser" << endl;
+
+
+							x_rand = position(rdgen);// sample random position
+							y_rand = position(rdgen);
+							do
+							{
+
+								do
+								{
+									R1 = unireal(rdgen);// random number
+									distance = (-1.0*mean_distance)*log(R1);// calc distance
+									rnd_angle = Prob(rdgen)*2.0*PI;// angle
+									new_x = (int)(distance*cos(rnd_angle) / cell_resolution + x_rand + i); //translate the continouse distance into a new position in the discrete cell
+									new_y = (int)(distance*sin(rnd_angle) / cell_resolution + y_rand + j);
+
+								} while (new_x == i && new_y == j);
+
+							} while (new_x<0 || new_x>xmax - 1 || new_y<0 || new_y>ymax - 1);
+
+							// give ind new coordinates 
+
+							iter->newx = new_x;
+							iter->newy = new_y;
+
+							if (dispersal_out)
+							{
+
+
+
+
+								if (g%out_ind_interval == 0)
+								{
+									iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+								}
+								else
+								{
+									if (g > out2_limit && g%out_ind_interval2 == 0)
+									{
+										iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+									}
+								}
+
+							}
+
+							iter->x = new_x;
+							iter->y = new_y;
+
+							popgrid[new_x][new_y].tmp_males.push_back(*iter);
+							popgrid[new_x][new_y].Noff++;
+							popgrid[i][j].Noff--;
+							popgrid[new_x][new_y].Moff++;
+							popgrid[i][j].Moff--;
+						}
+						else
+						{
+							popgrid[i][j].Noff--;
+							popgrid[i][j].Moff--;
+						}
+					}
+					else
+					{
+
+						iter->dispersal_type = false;
+						iter->newx = iter->x;
+						iter->newy = iter->y;
+
+						if (dispersal_out)
+						{
+
+
+
+							if (g%out_ind_interval == 0)
+							{
+								iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+							}
+							else
+							{
+								if (g > out2_limit && g%out_ind_interval2 == 0)
+								{
+									iter->outind_dispersal(r, g, &inds_dispersal); // output  large format
+								}
+							}
+						}
+
+						popgrid[i][j].tmp_males.push_back(*iter);
+					}
+
+				}
+
+
+
+			}
+
+			if (!popgrid[i][j].femaleOffspring.empty()) popgrid[i][j].femaleOffspring.clear();
+			if (!popgrid[i][j].maleOffspring.empty()) popgrid[i][j].maleOffspring.clear();
+
+			//cout << "nfemales " << popgrid[i][j].Nf << endl;
+			//cout << "nmales " << popgrid[i][j].Nm << endl;
+
+
+		}
+	}
+}
 
 
 void dispersal_control(void) {
@@ -2290,7 +2307,368 @@ void survival(void) {
 	}
 }
 
+void survival_ds(void) {
+	vector<Individuals>::iterator iter;
 
+	double sp; // survival probability
+
+	double sum_vf = 0.0; // sum of all the females viablity in a population
+	double sum_vm = 0.0; // sum of all the males viablity in a population
+
+	for (int i = 0; i < xmax; i++)
+	{
+		for (int j = 0; j < ymax; j++)
+		{
+			sum_vf = 0.0;
+			sum_vm = 0.0;
+
+			if (popgrid[i][j].Noff > 0)
+			{
+
+				//TRAIT DEPENDENT COST (get indi into temp_vector 2)
+
+
+
+
+				// FEMALE (first)
+
+				if (f_costs) // if female pref is costly, and hence selection is acting on the trait
+				{
+					if (fsel_din) // selection is density-independent
+					{
+
+
+
+						if (fc_hard)// and if selection is hard
+						{
+							for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++) // calculate viability for each female offspring 
+							{
+								iter->traits.viability = exp((-1.0*std::pow(iter->traits.g_pref - optima_f, 2.0)) / (2 * std::pow(w_f, 2.0)));
+								//cout << "female trait " << iter->traits.g_pref << "   viablity: " << iter->traits.viability << endl;
+								bernoulli_distribution selection_dist(iter->traits.viability);
+
+								if (selection_dist(rdgen))
+								{
+									cout << "survives F" << endl;
+									popgrid[i][j].tmp2_females.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Foff2++;
+
+								}
+
+							}
+
+						}
+
+						else //and  if selection is soft ( and density-independent), has to be worked on!!!!!!!!!!!!!!!!!!
+						{
+							for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++) // calculate viability for each female offspring 
+							{
+								iter->traits.viability = exp((-1.0*std::pow(iter->traits.g_pref - optima_f, 2.0)) / (2 * std::pow(w_f, 2.0)));
+								sum_vf += iter->traits.viability;
+
+								//cout << "female trait " << iter->traits.g_pref << "   viablity: " << iter->traits.viability << endl;
+							}
+
+							for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++)
+							{
+								iter->traits.viability = (iter->traits.viability / sum_vf);
+								bernoulli_distribution selection_dist(iter->traits.viability);
+								//cout << "female trait2 " << iter->traits.g_pref << "   viablity: " << iter->traits.viability << endl;
+
+								if (selection_dist(rdgen))
+								{
+
+									popgrid[i][j].tmp2_females.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Foff2++;
+
+								}
+							}
+						}
+
+					}
+
+					else // if selection is density-dependent then
+					{
+						if (fc_hard)// and if selection is hard
+						{
+							for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++) // calculate viability for each female offspring 
+							{
+								iter->traits.viability = fmin((grid[i][j].K / (double)popgrid[i][j].Noff)* exp((-1.0*std::pow(iter->traits.g_pref - optima_f, 2.0)) / (2 * std::pow(w_f, 2.0))), 1.0); // having viability multiplied by density dependence
+								//cout << "female trait " << iter->traits.g_pref << "   viablity: " << iter->traits.viability << endl;
+								bernoulli_distribution selection_dist(iter->traits.viability);
+
+								if (selection_dist(rdgen))
+								{
+									//cout << "survives" << endl;
+									popgrid[i][j].tmp2_females.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Foff2++;
+
+								}
+
+							}
+
+						}
+						else // and if selection is soft (density-dependent)
+						{
+							//calculate the viability of each female
+							for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++) // calculate viability for each female offspring 
+							{
+								iter->traits.viability = fmin(exp((-1.0*std::pow(iter->traits.g_pref - optima_f, 2.0)) / (2 * std::pow(w_f, 2.0))), 1.0); // having viability multiplied by density dependence
+								sum_vf += iter->traits.viability;
+
+								//cout << sum_vf << endl;
+								//cout << iter->traits.viability << endl;
+								//cout << "end" << endl;
+
+								//cout << "female trait " << iter->traits.g_pref << "   viablity: " << iter->traits.viability << endl;
+
+							}
+
+							for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++)
+							{
+
+								sp = fmin((iter->traits.viability / sum_vf)*grid[i][j].K, 1);
+
+								//cout <<"prob=" << sp << endl;
+								bernoulli_distribution selection_dist(sp);
+
+
+								if (selection_dist(rdgen))
+								{
+									//cout << "survives" << endl;
+									popgrid[i][j].tmp2_females.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Foff2++;
+
+								}
+
+							}
+
+						}
+
+
+
+
+
+					}
+				}
+
+				else // if no costs apply to females
+				{
+
+					for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++) // calculate viability for each female offspring 
+					{
+						iter->traits.viability = 1.0;
+
+						popgrid[i][j].tmp2_females.push_back(*iter);
+						popgrid[i][j].Noff2++;
+						popgrid[i][j].Foff2++;
+
+					}
+				}
+
+				// MALES  (second)
+
+				if (m_costs)
+				{
+
+					if (msel_din)// if selection on male is density-independent
+					{
+
+
+
+						if (mc_hard)
+						{
+							for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++) // calculate viability for each male offspring 
+							{
+								iter->traits.viability = fmin(exp((-1.0*std::pow(iter->traits.g_display - optima_m, 2.0)) / (2 * std::pow(w_m, 2.0))), 1);
+
+								//cout << "male trait " << iter->traits.g_display << "   viablity: " << iter->traits.viability << endl;
+
+								bernoulli_distribution selection_dist(iter->traits.viability);
+
+								if (selection_dist(rdgen))
+								{
+									cout << "survives M" << endl;
+									popgrid[i][j].tmp2_males.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Moff2++;
+
+								}
+							}
+						}
+
+						else // selection is soft. NEEDS WORK !!!!!!!!!!!!!!!!!!!!!!!
+						{
+							for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++) // calculate viability for each male offspring 
+							{
+								iter->traits.viability = exp((-1.0*std::pow(iter->traits.g_display - optima_m, 2.0)) / (2 * std::pow(w_m, 2.0)));
+								sum_vm += iter->traits.viability;
+
+								//cout << "male trait " << iter->traits.g_display << "   viablity: " << iter->traits.viability << endl;
+							}
+
+
+							//cout << " males selection weak: sum_vm " << sum_vm << endl;
+
+							for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++)
+							{
+								iter->traits.viability = fmin((iter->traits.viability / sum_vm), 1);
+								bernoulli_distribution selection_dist(iter->traits.viability);
+
+								//cout << "viablity: " << iter->traits.viability << endl;
+
+								if (selection_dist(rdgen))
+								{
+
+									popgrid[i][j].tmp2_males.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Moff2++;
+
+								}
+
+							}
+						}
+					}
+
+					else // if selection in density-dependent
+					{
+						if (mc_hard) // desnity dependent hard selection
+						{
+
+							for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++) // calculate viability for each male offspring 
+							{
+								iter->traits.viability = fmin((grid[i][j].K / (double)popgrid[i][j].Noff)*(exp((-1.0*std::pow(iter->traits.g_display - optima_m, 2.0)) / (2 * std::pow(w_m, 2.0)))), 1.0);
+
+								//cout << "male trait " << iter->traits.g_display << "   viablity: " << iter->traits.viability << endl;
+
+								bernoulli_distribution selection_dist(iter->traits.viability);
+
+								if (selection_dist(rdgen))
+								{
+									//cout << "survives" << endl;
+									popgrid[i][j].tmp2_males.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Moff2++;
+
+								}
+							}
+						}
+
+						else // if selection is density dependent soft
+						{
+							//calculate the viability of each male
+							for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++) // calculate viability for each female offspring 
+							{
+								iter->traits.viability = fmin(exp((-1.0*std::pow(iter->traits.g_display - optima_m, 2.0)) / (2 * std::pow(w_m, 2.0))), 1.0); // having viability multiplied by density dependence
+								sum_vm += iter->traits.viability;
+								//cout << sum_vm << endl;
+								//cout << iter->traits.viability << endl;
+								//cout << "end" << endl;
+
+
+							}
+
+							for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++)
+							{
+
+								sp = fmin((iter->traits.viability / sum_vm)*grid[i][j].K, 1);
+
+								//cout << "prob=" << sp << endl;
+								bernoulli_distribution selection_dist(sp);
+
+
+								if (selection_dist(rdgen))
+								{
+									//cout << "survives" << endl;
+									popgrid[i][j].tmp2_males.push_back(*iter);
+									popgrid[i][j].Noff2++;
+									popgrid[i][j].Moff2++;
+
+								}
+
+							}
+
+						}
+					}
+				}
+
+				else // if no costs apply to males
+				{
+
+					for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++) // calculate viability for each female offspring 
+					{
+						iter->traits.viability = 1.0;
+
+						//cout << "male trait " << iter->traits.g_display << "   viablity: " << iter->traits.viability << endl;
+
+						popgrid[i][j].tmp2_males.push_back(*iter);
+						popgrid[i][j].Noff2++;
+						popgrid[i][j].Moff2++;
+
+					}
+				}
+
+				//cout <<"N2 "<< popgrid[i][j].Noff2 << endl;
+				//cout << "moff2" << popgrid[i][j].Moff2 << endl;
+				//cout << "foff2" << popgrid[i][j].Foff2 << endl;
+
+				// TRAIT DEPENEDNT SELECTION OVER. Moving ind from tmp_2 to adult vector
+
+				sp = fmin(grid[i][j].K / (double)popgrid[i][j].Noff2, 1.0); // survival probability based on the new offspring vector, hence, prior mortalities make room for the rest
+				bernoulli_distribution surv_distr(sp);
+				//cout << "pop reg: sp =" << sp << endl;
+
+				//FEMALES FIRST
+
+
+
+				for (iter = popgrid[i][j].tmp2_females.begin(); iter != popgrid[i][j].tmp2_females.end(); iter++) // for females in the population
+				{
+					//cout << "SURB+VIVALfemale pref value: " << iter->traits.p_pref << endl;
+					if (surv_distr(rdgen))
+					{
+						popgrid[i][j].females.push_back(*iter);
+						popgrid[i][j].Nf++; // 
+						popgrid[i][j].N++;
+					}
+				}
+
+				// MALES
+
+				for (iter = popgrid[i][j].tmp2_males.begin(); iter != popgrid[i][j].tmp2_males.end(); iter++) // for males in the population
+				{
+					//cout << "male pref value: " << iter->traits.p_display << endl;
+					if (surv_distr(rdgen))
+					{
+						popgrid[i][j].males.push_back(*iter);
+						popgrid[i][j].Nm++;
+						popgrid[i][j].N++;
+					}
+				}
+
+			}
+
+			if (!popgrid[i][j].tmp_females.empty()) popgrid[i][j].tmp_females.clear();// clear temporary vectors
+			if (!popgrid[i][j].tmp2_females.empty()) popgrid[i][j].tmp2_females.clear();
+			if (!popgrid[i][j].tmp_males.empty()) popgrid[i][j].tmp_males.clear();
+			if (!popgrid[i][j].tmp2_males.empty()) popgrid[i][j].tmp2_males.clear();
+
+
+
+			popgrid[i][j].Noff = 0;
+			popgrid[i][j].Foff = 0;
+			popgrid[i][j].Moff = 0;
+			popgrid[i][j].Noff2 = 0;
+			popgrid[i][j].Foff2 = 0;
+			popgrid[i][j].Moff2 = 0;
+
+		}
+	}
+}
 //-------------------------------Output------------------------------------------------
 const string Int2Str(const int x)
 {

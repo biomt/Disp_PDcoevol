@@ -35,8 +35,10 @@ void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::norma
 		traits.g_display += traits.display1[i] + traits.display2[i]; // create additive trait value with equal effects of both chromosomes
 		traits.g_pref += traits.pref1[i] + traits.pref2[i];
 		traits.g_emig += traits.emig1[i] + traits.emig2[i];
+		
 	}
 
+	
 
 	if (traits.g_display > 0.0)
 	{
@@ -65,7 +67,7 @@ void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::norma
 			traits.p_emig = traits.g_emig;
 		}
 	}
-
+	
 }
 
 // mutation effect missing emigration trait , individual output missing emig trait
@@ -74,6 +76,7 @@ void Individuals::mutation_effect(int L,int Nloci,normal_distribution<>effect)
 	double muteffect;
 	muteffect = effect(rdgenInd);
 
+	
 
 	if (L < Nloci * 2)
 	{
@@ -127,6 +130,7 @@ void Individuals::mutation_effect(int L,int Nloci,normal_distribution<>effect)
 
 			traits.g_emig += muteffect;
 
+			
 			if (traits.g_emig < 0.0) traits.p_emig = 0.0;
 			else 
 			{
@@ -134,7 +138,6 @@ void Individuals::mutation_effect(int L,int Nloci,normal_distribution<>effect)
 				else traits.p_emig = traits.g_emig;
 
 			}
-
 
 		}
 
