@@ -46,16 +46,16 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =7; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =15; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
-int rep = 1; // replicates of your simulations
-int gen = 10; // number of generations
+int rep = 2; // replicates of your simulations
+int gen = 20; // number of generations
 
 int r, g; // current replicate and current generation in the simulation
 
 //Landscape
 
- const int xmax = 1;
+ const int xmax = 2;
  const int ymax = 2;
 
  const double cell_resolution = 100.0; // resolution in the cell
@@ -88,6 +88,7 @@ double mean_distance = 100.0; // mean dispersal distance in continouse space
 double disp_cost = 0.0; // cost of dispersal
 
 bool disp_evol = true; // if true, dispersal probability can evolve
+bool disp_sex = false; // if true, sex-specific dispersal (males express EmigM)
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
 bool d_post = false; // post- survival dispersal
 
@@ -96,11 +97,13 @@ int Nloci = 10;
 double meanPref = 0.0;
 double meanDisplay = 0.0;
 double meanEmig = 0.5;
+double meanEmigM = 0.5;
 
 
 double stdPref = 1;
 double stdDisplay = 1;
 double stdEmig = 0.1;
+double stdEmigM = 0.1;
 
 
 bool m_costs = false; // if male trait is costly or not
@@ -165,8 +168,8 @@ bool dispersal_out = false;
 
 // parameters for distributions
 
-int Kmin = 50;
-int Kmax = 50;
+int Kmin = 100;
+int Kmax = 100;
 
 int Smin = 1; // if quantile is true : values from 1-10, if false: values from 1-100
 int Smax = 1;
@@ -177,6 +180,7 @@ bernoulli_distribution extdistr(hab_turn); // distribution of population exticnt
 normal_distribution<> NormPref(meanPref / (2.0*(double)Nloci), stdPref / sqrt(2.0*(double)Nloci));
 normal_distribution<> NormDisplay(meanDisplay / (2.0*(double)Nloci), stdDisplay / sqrt(2.0*(double)Nloci));
 normal_distribution<> NormEmig(meanEmig / (2.0*(double)Nloci), stdEmig / sqrt(2.0*(double)Nloci));
+normal_distribution<> NormEmigM(meanEmigM / (2.0*(double)Nloci), stdEmigM / sqrt(2.0*(double)Nloci));
 
 uniform_real_distribution<> Prob(0.0, 1.0);
 poisson_distribution<>offdistr(offspring);

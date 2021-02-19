@@ -189,14 +189,14 @@ void start(void) {
 			for (int l = 0; l < (int)(popgrid[i][j].N / 2); l++) // intilise population with half females and half males
 			{
 				popgrid[i][j].females.push_back(Individuals(1, i, j)); // in the cell, initialise the females of the pop
-				popgrid[i][j].females[l].setgenes(Nloci, NormPref, NormDisplay,NormEmig); // give the individuals their properties, genome..
+				popgrid[i][j].females[l].setgenes(Nloci, NormPref, NormDisplay,NormEmig,NormEmigM); // give the individuals their properties, genome..
 				popgrid[i][j].Nf++;
 			}
 
 			for (int l = 0; l < (int)(popgrid[i][j].N) / 2; l++)
 			{
 				popgrid[i][j].males.push_back(Individuals(0, i, j)); // do the same for the males.
-				popgrid[i][j].males[l].setgenes(Nloci, NormPref, NormDisplay, NormEmig);
+				popgrid[i][j].males[l].setgenes(Nloci, NormPref, NormDisplay, NormEmig,NormEmigM);
 				popgrid[i][j].Nm++;
 			}
 
@@ -560,7 +560,7 @@ void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 	// offspring chromosomes with loci pref1,display1 and emig1 are inherited from mummy
 	
 
-	int rdn, rdn2, rdn3, rdn4, rdn5, rdn6; // sample from which homolog to start for each pair 
+	int rdn, rdn2, rdn3, rdn4, rdn5, rdn6, rdn7,rdn8; // sample from which homolog to start for each pair 
 
 	rdn = berndistr(rdgen); // starting with either of the mum's chromosomes for loci encoding pref
 	rdn2 = berndistr(rdgen); // -||- dad pref
@@ -568,6 +568,8 @@ void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 	rdn4 = berndistr(rdgen); // -||- dad dispaly
 	rdn5 = berndistr(rdgen); // mum emig
 	rdn6 = berndistr(rdgen); // dad emig
+	rdn7 = berndistr(rdgen); // mum emigM
+	rdn8 = berndistr(rdgen); // dad emigM
 
 	for (int z = 0; z < Nloci; ++z) // to minimise loops, we punch in all the chromosomes. Reasons to keep it seperate would be if a trait shall be fixed and cant evolve
 	{
@@ -655,7 +657,7 @@ void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 		if (rdn6)//
 		{
 			kid->traits.emig2.push_back(daddy.traits.emig1[z]); // 
-			kid->traits.g_emig += daddy.traits.display1[z];
+			kid->traits.g_emig += daddy.traits.emig1[z];
 
 		}
 		else {
@@ -663,14 +665,44 @@ void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 			kid->traits.g_emig += daddy.traits.emig2[z];
 		}
 
+		// emigM
 
+		if (rdn7)// mum loci
+		{
+			kid->traits.emigM1.push_back(mummy.traits.emigM1[z]); // 
+			kid->traits.g_emigM += mummy.traits.emigM1[z]; // 
+
+		}
+		else {
+			kid->traits.emigM1.push_back(mummy.traits.emigM2[z]);
+			kid->traits.g_emigM += mummy.traits.emigM2[z];
+		}
+
+
+		// dads loci for emigM
+		if (rdn8)rdn8 -= recomb(rdgen); // 
+		else rdn8 += recomb(rdgen);// 
+
+		if (rdn8)//
+		{
+			kid->traits.emigM2.push_back(daddy.traits.emigM1[z]); // 
+			kid->traits.g_emigM += daddy.traits.emigM1[z];
+
+		}
+		else {
+			kid->traits.emigM2.push_back(daddy.traits.emigM2[z]);
+			kid->traits.g_emigM += daddy.traits.emigM2[z];
+		}
 
 
 	}
 
 	// assign phenotype, which is equal to g 
+	// pref
+
 	kid->traits.p_pref = kid->traits.g_pref;
 
+	// display
 	if (kid->traits.g_display > 0)
 	{
 		kid->traits.p_display = kid->traits.g_display; // phenotype equals the genotype when trait is above 0
@@ -681,6 +713,7 @@ void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 		kid->traits.p_display = 0; // phenotype is bound by 0
 	}
 
+	// emig
 	if (kid->traits.g_emig < 0)
 	{
 		kid->traits.p_emig = 0;
@@ -697,6 +730,25 @@ void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 			}
 	}
 
+	// emigM
+
+	if (kid->traits.g_emigM < 0)
+	{
+		kid->traits.p_emigM = 0;
+	}
+	else
+	{
+		if (kid->traits.g_emigM > 0)
+		{
+			kid->traits.p_emigM = 1.0;
+		}
+		else
+		{
+			kid->traits.p_emigM = kid->traits.g_emigM;
+		}
+	}
+
+
 }
 
 void mutation(int x,int y)// passing the information to access the population
@@ -706,9 +758,9 @@ void mutation(int x,int y)// passing the information to access the population
 	int locus;
 
 	
-	poisson_distribution<>mutdistr((double)popgrid[x][y].Noff*mutationrate*Nloci*2.0*3.0); //MT 02/02/21 : times 2 for diploid // additional because 3 traits
+	poisson_distribution<>mutdistr((double)popgrid[x][y].Noff*mutationrate*Nloci*2.0*4.0); //MT 02/02/21 : times 2 for diploid // additional because 3 traits
 	uniform_int_distribution<>indistr(0, popgrid[x][y].Noff-1);
-	uniform_int_distribution<>locidistr(0, Nloci * 6 - 1); // times six because 3 traits with each homolog
+	uniform_int_distribution<>locidistr(0, Nloci * 8 - 1); // times six because 4 traits with each homolog
 	
 	Nmut = mutdistr(rdgen);
 
@@ -758,18 +810,37 @@ void mutation(int x,int y)// passing the information to access the population
 				}
 				else // emig
 				{
-					if (ind < popgrid[x][y].Foff)// deciding that its females with lower ind
+					if (locus < Nloci * 6) // deciding that its emig
 					{
+						if (ind < popgrid[x][y].Foff)// deciding that its females with lower ind
+						{
 
-						popgrid[x][y].femaleOffspring[ind].mutation_effect(locus, Nloci, emig_mutdistr);
+							popgrid[x][y].femaleOffspring[ind].mutation_effect(locus, Nloci, emig_mutdistr);
+						}
+
+						else
+						{
+
+							popgrid[x][y].maleOffspring[ind - popgrid[x][y].Foff].mutation_effect(locus, Nloci, emig_mutdistr);
+						}
+
 					}
-
-					else
+					else // deciding emigM
 					{
+		
+						if (ind < popgrid[x][y].Foff)// deciding that its females with lower ind
+						{
 
-						popgrid[x][y].maleOffspring[ind - popgrid[x][y].Foff].mutation_effect(locus, Nloci, emig_mutdistr);
+							popgrid[x][y].femaleOffspring[ind].mutation_effect(locus, Nloci, emig_mutdistr);
+						}
+
+						else
+						{
+
+							popgrid[x][y].maleOffspring[ind - popgrid[x][y].Foff].mutation_effect(locus, Nloci, emig_mutdistr);
+						}
+					
 					}
-
 				}
 				//cout << "mutation effect Ok" << endl;
 			}
@@ -805,7 +876,7 @@ void dispersal(void) {
 				for (iter = popgrid[i][j].tmp_females.begin(); iter != popgrid[i][j].tmp_females.end(); iter++)
 				{
 				
-					if(disp_evol) emp=iter->traits.g_emig;
+					if(disp_evol) emp=iter->traits.p_emig;
 					else emp= disprob;
 
 					if(unireal(rdgen)<emp)// individual is dispersing
@@ -909,7 +980,11 @@ void dispersal(void) {
 				// same for male offspring 
 				for (iter = popgrid[i][j].tmp_males.begin(); iter != popgrid[i][j].tmp_males.end(); iter++)
 				{
-					if (disp_evol) emp = iter->traits.g_emig;
+					if (disp_evol)
+					{
+						if (disp_sex) emp = iter->traits.p_emigM; // male specific dispersal
+						else emp = iter->traits.p_emig; // both sexes the same
+					}
 					else emp = disprob;
 
 					if (unireal(rdgen) < emp)// individual is dispersing
@@ -1051,7 +1126,7 @@ void dispersal_ds(void) {
 				for (iter = popgrid[i][j].femaleOffspring.begin(); iter != popgrid[i][j].femaleOffspring.end(); iter++)
 				{
 
-					if (disp_evol) emp = iter->traits.g_emig;
+					if (disp_evol) emp = iter->traits.p_emig;
 					else emp = disprob;
 
 					if (unireal(rdgen) < emp)// individual is dispersing
@@ -1155,7 +1230,12 @@ void dispersal_ds(void) {
 				// same for male offspring 
 				for (iter = popgrid[i][j].maleOffspring.begin(); iter != popgrid[i][j].maleOffspring.end(); iter++)
 				{
-					if (disp_evol) emp = iter->traits.g_emig;
+					
+					if (disp_evol)
+					{
+						if (disp_sex) emp = iter->traits.p_emigM; // male specific dispersal
+						else emp = iter->traits.p_emig; // both sexes the same
+					}
 					else emp = disprob;
 
 					if (unireal(rdgen) < emp)// individual is dispersing
@@ -2697,12 +2777,12 @@ void out_ind_header(void)
 
 	if (indout_slim)
 	{
-		inds << "rep\tgen\tcoordx\tcoordy\tg_pref\tg_display\tg_emig\tsex" << endl;
+		inds << "rep\tgen\tcoordx\tcoordy\tg_pref\tg_display\tg_emig\tg_emigM\tsex" << endl;
 	}
 
 	else
 	{
-		inds << "rep\tgen\tcoordx\tcoordy\tsex\tg_pref\tp_pref\tg_display\tp_display\tg_emig\tp_emig" << endl;
+		inds << "rep\tgen\tcoordx\tcoordy\tsex\tg_pref\tp_pref\tg_display\tp_display\tg_emig\tp_emig\tg_emigM\tp_emigM" << endl;
 	}
 }
 
@@ -2723,12 +2803,12 @@ void out_param_header(void) {
 	name = dirout + "Sim" + Int2Str(simNr) + "_parameters.txt";
 	param.open(name.c_str());
 
-	param << "SimNr\trep\tgen\txmax\tymax\tKmin\tKmax\tSmin\tSmax\thabturn\tdisprob\tmdistance\tdispcost\tNloci\tmeanPref\tstdPref\tmeanDisplay\tstdDisplay\tmeanEmig\tstdEmig\tmutrate\tsampleallmates\tind_sample\tquantileS\tsubsamplemates\toffspring\toutpop\toutind\tcost_f\tfc_hard\tfsel_din\tw_f\topt_f\tcost_m\tmc_hard\tmsel_din\tw_m\topt_m" << endl;
+	param << "SimNr\trep\tgen\txmax\tymax\tKmin\tKmax\tSmin\tSmax\thabturn\tdisprob\tmdistance\tdispcost\tdispevol\tdispsex\tNloci\tmeanPref\tstdPref\tmeanDisplay\tstdDisplay\tmeanEmig\tstdEmig\tmeanEmigM\tstdEmigM\tmutrate\tsampleallmates\tind_sample\tquantileS\tsubsamplemates\toffspring\toutpop\toutind\tcost_f\tfc_hard\tfsel_din\tw_f\topt_f\tcost_m\tmc_hard\tmsel_din\tw_m\topt_m" << endl;
 }
 
 void outparam(int simNr,std::ofstream*out) {
 
-	*out << simNr << "\t" << rep << "\t" << gen << "\t" << xmax << "\t" << ymax << "\t"<< Kmin << "\t" << Kmax<< "\t"<< Smin <<"\t"<< Smax << "\t" << hab_turn << "\t" << disprob << "\t" << mean_distance << "\t" << disp_cost << "\t" << Nloci << "\t" << meanPref << "\t" << stdPref << "\t" << meanDisplay << "\t" << stdDisplay << "\t" <<meanEmig << "\t"<< stdEmig<< "\t" << mutationrate << "\t" << sample_all_mates << "\t" << ind_sample<<"\t"<< quantileS << "\t" << subsample_mates << "\t" << offspring << "\t" << out_pop_interval << "\t" << out_ind_interval <<"\t"<< f_costs<< "\t" << fc_hard << "\t" << fsel_din << "\t"<<w_f<<"\t"<<optima_f<<"\t"<<m_costs<<"\t"<< mc_hard <<"\t"<< msel_din<<"\t"<<w_m<<"\t"<<optima_m<< endl;
+	*out << simNr << "\t" << rep << "\t" << gen << "\t" << xmax << "\t" << ymax << "\t"<< Kmin << "\t" << Kmax<< "\t"<< Smin <<"\t"<< Smax << "\t" << hab_turn << "\t" << disprob << "\t" << mean_distance << "\t" << disp_cost <<  "\t" << disp_evol << "\t" << disp_sex << "\t" << Nloci << "\t" << meanPref << "\t" << stdPref << "\t" << meanDisplay << "\t" << stdDisplay << "\t" <<meanEmig << "\t"<< stdEmig<< "\t" << meanEmigM << "\t" << stdEmigM << "\t" << mutationrate << "\t" << sample_all_mates << "\t" << ind_sample<<"\t"<< quantileS << "\t" << subsample_mates << "\t" << offspring << "\t" << out_pop_interval << "\t" << out_ind_interval <<"\t"<< f_costs<< "\t" << fc_hard << "\t" << fsel_din << "\t"<<w_f<<"\t"<<optima_f<<"\t"<<m_costs<<"\t"<< mc_hard <<"\t"<< msel_din<<"\t"<<w_m<<"\t"<<optima_m<< endl;
 }
 
 void sim_out(void) {

@@ -16,7 +16,7 @@ Individuals::~Individuals() {
 
 }
 
-void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::normal_distribution<>NormDisplay, std::normal_distribution<>NormEmig) // this function is automatically used by the ind. apply the values for the alleles
+void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::normal_distribution<>NormDisplay, std::normal_distribution<>NormEmig, std::normal_distribution<>NormEmigM) // this function is automatically used by the ind. apply the values for the alleles
 {
 	// one can use a more quant gen approach with assuming that the trait is additive. normal distribution of alles ends up
 	// 
@@ -32,12 +32,17 @@ void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::norma
 		traits.emig1.push_back(NormEmig(rdgenInd));
 		traits.emig2.push_back(NormEmig(rdgenInd));
 
+		traits.emigM1.push_back(NormDisplay(rdgenInd)); // error ??? why does it draw values different from emig1
+		traits.emigM2.push_back(NormDisplay(rdgenInd));
+
+
 		traits.g_display += traits.display1[i] + traits.display2[i]; // create additive trait value with equal effects of both chromosomes
 		traits.g_pref += traits.pref1[i] + traits.pref2[i];
 		traits.g_emig += traits.emig1[i] + traits.emig2[i];
+		traits.g_emigM += traits.emigM1[i] + traits.emigM2[i];
 		
 	}
-
+	//cout << "gemigM = " << traits.g_emigM << endl;
 	
 
 	if (traits.g_display > 0.0)
@@ -68,6 +73,22 @@ void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::norma
 		}
 	}
 	
+	// male emig 
+	if (traits.g_emigM < 0.0)
+	{
+		traits.p_emigM = 0.0; // male emigration phenotype bound by 0
+	}
+	else
+	{
+		if (traits.g_emigM > 1.0)
+		{
+			traits.p_emigM = 1.0; //male  emigration phenotype bound by 1
+		}
+		else {
+			traits.p_emigM = traits.g_emigM;
+		}
+	}
+
 }
 
 // mutation effect missing emigration trait , individual output missing emig trait
@@ -118,24 +139,51 @@ void Individuals::mutation_effect(int L,int Nloci,normal_distribution<>effect)
 
 
 		}
-		else 
+		else
 		{
-			if (L < Nloci * 5)
-			{
+			if (L < Nloci * 6) 
+			{ //
+
+				if (L < Nloci * 5)
+				{
 				traits.emig1[L - 4 * Nloci] += muteffect;
-			}
-			else {
+				}
+				else {
 				traits.emig2[L - 5 * Nloci] += muteffect;
+				}
+
+				traits.g_emig += muteffect;
+
+
+				if (traits.g_emig < 0.0) traits.p_emig = 0.0;
+				else
+				{
+					if (traits.g_emig > 1.0)traits.p_emig = 1.0;
+					else traits.p_emig = traits.g_emig;
+
+				}
+
 			}
-
-			traits.g_emig += muteffect;
-
-			
-			if (traits.g_emig < 0.0) traits.p_emig = 0.0;
-			else 
+			else
 			{
-				if (traits.g_emig > 1.0)traits.p_emig = 1.0;
-				else traits.p_emig = traits.g_emig;
+				if (L < Nloci * 7)
+				{
+					traits.emigM1[L - 6 * Nloci] += muteffect;
+				}
+				else {
+					traits.emigM2[L - 7 * Nloci] += muteffect;
+				}
+
+				traits.g_emigM += muteffect;
+
+
+				if (traits.g_emigM < 0.0) traits.p_emigM = 0.0;
+				else
+				{
+					if (traits.g_emigM > 1.0)traits.p_emigM = 1.0;
+					else traits.p_emigM = traits.g_emigM;
+
+				}
 
 			}
 
@@ -148,14 +196,14 @@ void Individuals::mutation_effect(int L,int Nloci,normal_distribution<>effect)
 void Individuals::outind(int repl, int gen, std::ofstream *out)
 {
 	
-	*out << repl << "\t" << gen << "\t" << x << "\t" << y << "\t" << sex << "\t" << traits.g_pref << "\t" << traits.p_pref << "\t" << traits.g_display << "\t" << traits.p_display << endl;
+	*out << repl << "\t" << gen << "\t" << x << "\t" << y << "\t" << sex << "\t" << traits.g_pref << "\t" << traits.p_pref << "\t" << traits.g_display << "\t" << traits.p_display << "\t" << traits.g_emig << "\t" << traits.p_emig << "\t" << traits.g_emigM << "\t" << traits.p_emigM << endl;
 
 }
 
 void Individuals::outind_slim(int repl, int gen, std::ofstream *out)
 {
 
-	*out << repl << "\t" << gen << "\t" << x << "\t" << y << "\t"  << traits.g_pref << "\t" << traits.g_display << "\t"<< traits.g_emig <<"\t" <<  sex << endl;
+	*out << repl << "\t" << gen << "\t" << x << "\t" << y << "\t"  << traits.g_pref << "\t" << traits.g_display << "\t"<< traits.g_emig <<"\t" << traits.g_emigM << "\t" << sex << endl;
 
 }
 
