@@ -32,8 +32,8 @@ void Individuals::setgenes(int L, std::normal_distribution<>NormPref, std::norma
 		traits.emig1.push_back(NormEmig(rdgenInd));
 		traits.emig2.push_back(NormEmig(rdgenInd));
 
-		traits.emigM1.push_back(NormDisplay(rdgenInd)); // error ??? why does it draw values different from emig1
-		traits.emigM2.push_back(NormDisplay(rdgenInd));
+		traits.emigM1.push_back(NormEmigM(rdgenInd)); // error ??? why does it draw values different from emig1
+		traits.emigM2.push_back(NormEmigM(rdgenInd));
 
 
 		traits.g_display += traits.display1[i] + traits.display2[i]; // create additive trait value with equal effects of both chromosomes

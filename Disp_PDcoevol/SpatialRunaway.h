@@ -46,10 +46,10 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =15; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =16; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
-int rep = 2; // replicates of your simulations
-int gen = 20; // number of generations
+int rep = 5; // replicates of your simulations
+int gen = 800; // number of generations
 
 int r, g; // current replicate and current generation in the simulation
 
@@ -88,7 +88,7 @@ double mean_distance = 100.0; // mean dispersal distance in continouse space
 double disp_cost = 0.0; // cost of dispersal
 
 bool disp_evol = true; // if true, dispersal probability can evolve
-bool disp_sex = false; // if true, sex-specific dispersal (males express EmigM)
+bool disp_sex = true; // if true, sex-specific dispersal (males express EmigM)
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
 bool d_post = false; // post- survival dispersal
 
@@ -168,8 +168,8 @@ bool dispersal_out = false;
 
 // parameters for distributions
 
-int Kmin = 100;
-int Kmax = 100;
+int Kmin = 200;
+int Kmax = 200;
 
 int Smin = 1; // if quantile is true : values from 1-10, if false: values from 1-100
 int Smax = 1;
