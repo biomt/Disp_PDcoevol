@@ -106,12 +106,12 @@ double stdEmig = 0.1;
 double stdEmigM = 0.1;
 
 
-bool m_costs = false; // if male trait is costly or not
+bool m_costs = true; // if male trait is costly or not
 bool mc_hard = true; // if selection on male trait is hard or soft
 double w_m = 2.0; // strength of natural selection on male trait- will be squared 
 double optima_m = 0.0;// global optima for male trait (could in the future be changed into a property of grid)
 
-bool f_costs = false; // if female pref is costly or not
+bool f_costs = true; // if female pref is costly or not
 bool fc_hard = true; // if selection on female trait is hard or soft
 double w_f = 5.0; // strength o natural selection on female trait
 double optima_f = 0.0; // global optima for female pref

@@ -2431,7 +2431,7 @@ void survival_ds(void) {
 
 								if (selection_dist(rdgen))
 								{
-									cout << "survives F" << endl;
+									//cout << "survives F" << endl;
 									popgrid[i][j].tmp2_females.push_back(*iter);
 									popgrid[i][j].Noff2++;
 									popgrid[i][j].Foff2++;
@@ -2574,7 +2574,7 @@ void survival_ds(void) {
 
 								if (selection_dist(rdgen))
 								{
-									cout << "survives M" << endl;
+									//cout << "survives M" << endl;
 									popgrid[i][j].tmp2_males.push_back(*iter);
 									popgrid[i][j].Noff2++;
 									popgrid[i][j].Moff2++;
