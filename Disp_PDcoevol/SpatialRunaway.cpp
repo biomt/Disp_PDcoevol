@@ -41,16 +41,18 @@ int main(int argc,char* argv[])
 
 //addition for dispersal evolution
 	disp_evol= std::atoi(argv[21]);
-	disp_cost= std::atof(argv[22]);
+	disp_sex= std::atoi(argv[22]);
+	disp_cost= std::atof(argv[23]);
 
-	meanDisplay= std::atof(argv[23]);
-	meanPref= std::atof(argv[24]);
-	meanEmig= std::atof(argv[25]);
+	meanDisplay= std::atof(argv[24]);
+	meanPref= std::atof(argv[25]);
+	meanEmig= std::atof(argv[26]);
+	meanEmigM = std::atof(argv[27]);
 
-	stdDisplay= std::atof(argv[26]);
-	stdPref= std::atof(argv[27]);
-	stdEmig= std::atof(argv[28]);
-
+	stdDisplay= std::atof(argv[28]);
+	stdPref= std::atof(argv[29]);
+	stdEmig= std::atof(argv[30]);
+	stdEmigM = std::atof(argv[31]);
 
 	
 // track time of the line

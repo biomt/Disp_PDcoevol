@@ -55,8 +55,8 @@ int r, g; // current replicate and current generation in the simulation
 
 //Landscape
 
- const int xmax = 2;
- const int ymax = 2;
+  const int xmax = 7;
+  const int ymax = 7;
 
  const double cell_resolution = 100.0; // resolution in the cell
 
