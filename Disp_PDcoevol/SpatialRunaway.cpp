@@ -1,21 +1,17 @@
 #include "SpatialRunaway.h"
 
 // DEFINE DISTRIBUTIONS
-bernoulli_distribution extdistr(hab_turn); // distribution of population exticntion, probability distribution of being true.
-normal_distribution<> NormPref(meanPref / (2.0*(double)Nloci), stdPref / sqrt(2.0*(double)Nloci));
-normal_distribution<> NormDisplay(meanDisplay / (2.0*(double)Nloci), stdDisplay / sqrt(2.0*(double)Nloci));
-normal_distribution<> NormEmig(meanEmig / (2.0*(double)Nloci), stdEmig / sqrt(2.0*(double)Nloci));
-normal_distribution<> NormEmigM(meanEmigM / (2.0*(double)Nloci), stdEmigM / sqrt(2.0*(double)Nloci));
 
-uniform_real_distribution<> Prob(0.0, 1.0);
-poisson_distribution<>offdistr(offspring);
-bernoulli_distribution sexdistr(0.5); // prob of true (1) , could change the sex ratio with that
-bernoulli_distribution berndistr(0.5); // prob of true (1) general bernoulli
-bernoulli_distribution recomb(recprob); // probability of recombination
-normal_distribution<> pref_mutdistr(0.0, (stdPref / sqrt(2.0*(double)Nloci))*0.1); //to scale the variation to the intial variation in the trait. The variation in the evvect size of the muation is 1/10 of the inital variation in the trait
-normal_distribution<> display_mutdistr(0.0, (stdDisplay / sqrt(2.0*(double)Nloci))*0.1);
-normal_distribution<> emig_mutdistr(0.0, (stdEmig / sqrt(2.0*(double)Nloci))*0.1);
-bernoulli_distribution costdistr(disp_cost);
+
+
+
+
+
+
+
+
+
+
 
 #if CLUSTER
 
@@ -181,6 +177,11 @@ void runmodel(void){
 
 void start(void) {
 
+	normal_distribution<> NormPref(meanPref / (2.0*(double)Nloci), stdPref / sqrt(2.0*(double)Nloci));
+	normal_distribution<> NormDisplay(meanDisplay / (2.0*(double)Nloci), stdDisplay / sqrt(2.0*(double)Nloci));
+	normal_distribution<> NormEmig(meanEmig / (2.0*(double)Nloci), stdEmig / sqrt(2.0*(double)Nloci));
+	normal_distribution<> NormEmigM(meanEmigM / (2.0*(double)Nloci), stdEmigM / sqrt(2.0*(double)Nloci));
+
 	uniform_int_distribution<> Kdistr(Kmin, Kmax); // distr for carrying capacity
 	uniform_int_distribution<> Sdistr(Smin, Smax); // percent of males subsampled in a population
 
@@ -230,6 +231,11 @@ void start(void) {
 
 void reproduction2(void) 
 {
+	bernoulli_distribution extdistr(hab_turn); // distribution of population exticntion, probability distribution of being true.
+	uniform_real_distribution<> Prob(0.0, 1.0);
+	poisson_distribution<>offdistr(offspring);
+	bernoulli_distribution sexdistr(0.5); // prob of true (1) , could change the sex ratio with that
+
 	// define local variable for the funtion
 	vector<Individuals>::iterator iter; // member of the vector class, enables you to act on the vector
 	vector<Individuals>::iterator iter2; // to loop through all males to calculate the sum of exponential pref to display relation
@@ -579,6 +585,8 @@ void reproduction2(void)
 void inheritance(Individuals *kid, Individuals mummy, Individuals daddy)
 { 
 	// offspring chromosomes with loci pref1,display1 and emig1 are inherited from mummy
+	bernoulli_distribution berndistr(0.5); // prob of true (1) general bernoulli
+	bernoulli_distribution recomb(recprob); // probability of recombination
 	
 
 	int rdn, rdn2, rdn3, rdn4, rdn5, rdn6, rdn7,rdn8; // sample from which homolog to start for each pair 
@@ -778,7 +786,9 @@ void mutation(int x,int y)// passing the information to access the population
 	int ind;
 	int locus;
 
-	
+	normal_distribution<> pref_mutdistr(0.0, (stdPref / sqrt(2.0*(double)Nloci))*0.1); //to scale the variation to the intial variation in the trait. The variation in the evvect size of the muation is 1/10 of the inital variation in the trait
+	normal_distribution<> display_mutdistr(0.0, (stdDisplay / sqrt(2.0*(double)Nloci))*0.1);
+	normal_distribution<> emig_mutdistr(0.0, (stdEmig / sqrt(2.0*(double)Nloci))*0.1);
 	poisson_distribution<>mutdistr((double)popgrid[x][y].Noff*mutationrate*Nloci*2.0*4.0); //MT 02/02/21 : times 2 for diploid // additional because 3 traits
 	uniform_int_distribution<>indistr(0, popgrid[x][y].Noff-1);
 	uniform_int_distribution<>locidistr(0, Nloci * 8 - 1); // times six because 4 traits with each homolog
@@ -873,6 +883,9 @@ void mutation(int x,int y)// passing the information to access the population
 //--------------------------------SPACE-----------------------------------------------
 
 void dispersal(void) {
+	uniform_real_distribution<> Prob(0.0, 1.0);
+	bernoulli_distribution costdistr(disp_cost);
+
 	int new_x;
 	int new_y;
 	double distance, rnd_angle, R1, x_rand, y_rand;
@@ -1123,6 +1136,9 @@ void dispersal(void) {
  // current dispersal function commented out
 
 void dispersal_ds(void) {
+	uniform_real_distribution<> Prob(0.0, 1.0);
+	bernoulli_distribution costdistr(disp_cost);
+
 	int new_x;
 	int new_y;
 	double distance, rnd_angle, R1, x_rand, y_rand;
@@ -1374,6 +1390,9 @@ void dispersal_ds(void) {
 
 
 void dispersal_control(void) {
+	uniform_real_distribution<> Prob(0.0, 1.0);
+	bernoulli_distribution costdistr(disp_cost);
+
 	int new_x;
 	int new_y;
 	double distance, rnd_angle, R1, x_rand, y_rand;
