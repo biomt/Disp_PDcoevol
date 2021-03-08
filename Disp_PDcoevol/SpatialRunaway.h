@@ -46,17 +46,17 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =16; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =6; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
-int rep = 5; // replicates of your simulations
-int gen = 800; // number of generations
+int rep = 2; // replicates of your simulations
+int gen = 10; // number of generations
 
 int r, g; // current replicate and current generation in the simulation
 
 //Landscape
 
-  const int xmax = 7;
-  const int ymax = 7;
+  const int xmax = 2;
+  const int ymax = 2;
 
  const double cell_resolution = 100.0; // resolution in the cell
 
@@ -83,12 +83,12 @@ double mutationrate = 0.001; //
 // Dispersal 
 
 
-double disprob = 0.1;// probability for dispersal deterministic
+double disprob = 0.0001;// probability for dispersal deterministic
 double mean_distance = 100.0; // mean dispersal distance in continouse space
 double disp_cost = 0.0; // cost of dispersal
 
-bool disp_evol = true; // if true, dispersal probability can evolve
-bool disp_sex = true; // if true, sex-specific dispersal (males express EmigM)
+bool disp_evol = false; // if true, dispersal probability can evolve
+bool disp_sex = false; // if true, sex-specific dispersal (males express EmigM)
 bool dispersal_cntrl= false; // if true, dispersal_control function is run, otherwise the normal dispersal function is run
 bool d_post = false; // post- survival dispersal
 
@@ -100,20 +100,20 @@ double meanEmig = 0.5;
 double meanEmigM = 0.5;
 
 
-double stdPref = 1;
-double stdDisplay = 1;
-double stdEmig = 0.1;
-double stdEmigM = 0.1;
+double stdPref = 1.0;
+double stdDisplay = 1.0;
+double stdEmig = 1.0;
+double stdEmigM = 1.0;
 
 
 bool m_costs = true; // if male trait is costly or not
 bool mc_hard = true; // if selection on male trait is hard or soft
-double w_m = 2.0; // strength of natural selection on male trait- will be squared 
+double w_m = 10.0; // strength of natural selection on male trait- will be squared 
 double optima_m = 0.0;// global optima for male trait (could in the future be changed into a property of grid)
 
 bool f_costs = true; // if female pref is costly or not
 bool fc_hard = true; // if selection on female trait is hard or soft
-double w_f = 5.0; // strength o natural selection on female trait
+double w_f = 10.0; // strength o natural selection on female trait
 double optima_f = 0.0; // global optima for female pref
 
 
@@ -154,8 +154,8 @@ mt19937 rdgen(rd()); // random number gnenerator using the rd. look for library 
 //outputs
 
 ofstream inds, inds_dispersal, pops, param;
-int out_pop_interval = 1;
-int out_ind_interval = 1;
+int out_pop_interval = 20;
+int out_ind_interval = 20;
 
 int out2_limit = 80;
 
@@ -175,19 +175,4 @@ int Smin = 1; // if quantile is true : values from 1-10, if false: values from 1
 int Smax = 1;
 
 
-// distributions
-bernoulli_distribution extdistr(hab_turn); // distribution of population exticntion, probability distribution of being true.
-normal_distribution<> NormPref(meanPref / (2.0*(double)Nloci), stdPref / sqrt(2.0*(double)Nloci));
-normal_distribution<> NormDisplay(meanDisplay / (2.0*(double)Nloci), stdDisplay / sqrt(2.0*(double)Nloci));
-normal_distribution<> NormEmig(meanEmig / (2.0*(double)Nloci), stdEmig / sqrt(2.0*(double)Nloci));
-normal_distribution<> NormEmigM(meanEmigM / (2.0*(double)Nloci), stdEmigM / sqrt(2.0*(double)Nloci));
 
-uniform_real_distribution<> Prob(0.0, 1.0);
-poisson_distribution<>offdistr(offspring);
-bernoulli_distribution sexdistr(0.5); // prob of true (1) , could change the sex ratio with that
-bernoulli_distribution berndistr(0.5); // prob of true (1) general bernoulli
-bernoulli_distribution recomb(recprob); // probability of recombination
-normal_distribution<> pref_mutdistr(0.0, (stdPref / sqrt(2.0*(double)Nloci))*0.1); //to scale the variation to the intial variation in the trait. The variation in the evvect size of the muation is 1/10 of the inital variation in the trait
-normal_distribution<> display_mutdistr(0.0, (stdDisplay / sqrt(2.0*(double)Nloci))*0.1);
-normal_distribution<> emig_mutdistr(0.0, (stdEmig / sqrt(2.0*(double)Nloci))*0.1);
-bernoulli_distribution costdistr(disp_cost);

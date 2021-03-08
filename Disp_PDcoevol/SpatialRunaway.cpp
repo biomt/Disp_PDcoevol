@@ -1,5 +1,22 @@
 #include "SpatialRunaway.h"
 
+// DEFINE DISTRIBUTIONS
+bernoulli_distribution extdistr(hab_turn); // distribution of population exticntion, probability distribution of being true.
+normal_distribution<> NormPref(meanPref / (2.0*(double)Nloci), stdPref / sqrt(2.0*(double)Nloci));
+normal_distribution<> NormDisplay(meanDisplay / (2.0*(double)Nloci), stdDisplay / sqrt(2.0*(double)Nloci));
+normal_distribution<> NormEmig(meanEmig / (2.0*(double)Nloci), stdEmig / sqrt(2.0*(double)Nloci));
+normal_distribution<> NormEmigM(meanEmigM / (2.0*(double)Nloci), stdEmigM / sqrt(2.0*(double)Nloci));
+
+uniform_real_distribution<> Prob(0.0, 1.0);
+poisson_distribution<>offdistr(offspring);
+bernoulli_distribution sexdistr(0.5); // prob of true (1) , could change the sex ratio with that
+bernoulli_distribution berndistr(0.5); // prob of true (1) general bernoulli
+bernoulli_distribution recomb(recprob); // probability of recombination
+normal_distribution<> pref_mutdistr(0.0, (stdPref / sqrt(2.0*(double)Nloci))*0.1); //to scale the variation to the intial variation in the trait. The variation in the evvect size of the muation is 1/10 of the inital variation in the trait
+normal_distribution<> display_mutdistr(0.0, (stdDisplay / sqrt(2.0*(double)Nloci))*0.1);
+normal_distribution<> emig_mutdistr(0.0, (stdEmig / sqrt(2.0*(double)Nloci))*0.1);
+bernoulli_distribution costdistr(disp_cost);
+
 #if CLUSTER
 
 int main(int argc,char* argv[])
@@ -98,6 +115,8 @@ void runmodel(void){
 	outparam(simNr,&param);
 
 	
+
+
 
 	for (r = 0; r < rep; r++) // the replicate loop for your model
 	{
