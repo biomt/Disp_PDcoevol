@@ -46,7 +46,7 @@ const double PI = 3.141592654;
 // global variables (parameters) 
 
 //
-int simNr =6; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
+int simNr =10; // change that to whaever simulation you are running, otherwise it will overwrite output!!!!!!!!!!!!
 
 int rep = 2; // replicates of your simulations
 int gen = 10; // number of generations
